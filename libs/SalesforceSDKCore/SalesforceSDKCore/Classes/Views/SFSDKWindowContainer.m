@@ -115,8 +115,8 @@
     return _windowType == SFSDKWindowTypeSnapshot;
 }
 
-- (BOOL)isPasscodeWindow {
-    return _windowType == SFSDKWindowTypePasscode;
+- (BOOL)isScreenLockWindow {
+    return _windowType == SFSDKWindowTypeScreenLock;
 }
 
 - (UIViewController*)topViewController {

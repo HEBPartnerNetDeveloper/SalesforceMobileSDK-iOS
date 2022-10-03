@@ -599,28 +599,28 @@
 }
 
 - (UIInterfaceOrientation)interfaceOrientation {
-    UIDeviceOrientation deviceOrientation = [[UIDevice currentDevice] orientation];
+    UIDeviceOrientation deviceOrientation = UIDevice.currentDevice.orientation;
     UIInterfaceOrientation orientation = (UIInterfaceOrientation)deviceOrientation;
     if (!UIDeviceOrientationIsValidInterfaceOrientation(deviceOrientation)) {
-        orientation = [[SFApplicationHelper sharedApplication] statusBarOrientation];
+        orientation = [SFApplicationHelper sharedApplication].windows.firstObject.windowScene.interfaceOrientation;
     }
     return orientation;
 }
 
 + (BOOL)currentDeviceIsIPad {
-    return ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad);
+    return (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad);
 }
 
 + (BOOL)currentDeviceIsIPhone {
-    return ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPhone);
+    return (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPhone);
 }
 
 - (BOOL)isSimulator {
-    NSString *platform = [self platform];
-    if ([platform hasSuffix:@"86"] || [platform isEqual:@"x86_64"]) {
-        return YES;
-    }
+    #if TARGET_OS_SIMULATOR
+    return YES;
+    #else
     return NO;
+    #endif
 }
 
 - (BOOL)hasIphone6ScreenSize {

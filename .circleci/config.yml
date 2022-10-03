@@ -1,7 +1,8 @@
 anchors:
-  - &latest-xcode "12.0.1"
-  - &latest-ios   "14.1"
-  - &min-ios      "13.5"
+  - &latest-xcode "13.2.1"
+  - &latest-ios   "15.2"
+  - &min-ios      "14.5"
+  - &chruby       "3.0.3"
 
 executors:
   mac:
@@ -12,7 +13,7 @@ executors:
     environment:
       BASH_ENV: ~/.bashrc
       FASTLANE_SKIP_UPDATE_CHECK: "true"
-      CHRUBY_VER: 2.7.1
+      CHRUBY_VER: *chruby
 
 version: 2.1
 jobs:
@@ -23,7 +24,7 @@ jobs:
         default: "SalesforceSDKCommon"
       device:
         type: string
-        default: "iPhone 11"
+        default: "iPhone 12"
       ios:
         type: string
         default: *latest-xcode
@@ -48,7 +49,7 @@ jobs:
       - run: 
           name: Install Dependencies
           command:  |
-            npm install shelljs@0.8.3
+            npm install shelljs@0.8.4
             ./install.sh
             ./build/pre-build
             chruby ${CHRUBY_VER}
@@ -58,7 +59,7 @@ jobs:
       - save_cache: 
           key: v7-gems-{{ checksum ".circleci/Gemfile.lock" }}
           paths:
-            - /Users/distiller/.gem/ruby/2.7.1
+            - /Users/distiller/.gem/ruby/3.0.3
       - run: 
           name: Run Tests
           command:  |
@@ -80,10 +81,6 @@ jobs:
       - store_artifacts:
           path: /Users/distiller/SalesforceMobileSDK-iOS/clangReport
           destination: Static-Analysis
-      - run: 
-          name: Codecov Uplaod
-          command: bash <(curl -s https://codecov.io/bash) -X gcov -X xcode
-          when: always
 
       
 workflows:
@@ -102,6 +99,10 @@ workflows:
 
   # Cron are on a timezone 8 hours ahead of PST
   # Build everything at ~10:30pm Tuesday/Thursday Nights
+  #
+  # Note:  The "requires" field is used to limit the number of concurrent jobs running (one per lib) to prevent 
+  # test faulures since some tests rely on the server or storage to have consistent counts.  Unfotunately the 
+  # "requires" field is just a string so anchors cannot be added, thus we need to maintain the iOS version.  
   nightly-test-ios:
     triggers:
       - schedule:
@@ -127,4 +128,4 @@ workflows:
               nightly-test: [true]
               ios: [*latest-ios]
           requires:
-            - test << matrix.lib >> iOS 13.5
+            - test << matrix.lib >> iOS 14.5

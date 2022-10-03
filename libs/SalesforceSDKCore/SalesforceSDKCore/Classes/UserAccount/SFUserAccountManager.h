@@ -29,8 +29,6 @@
 #import <SalesforceSDKCore/SFOAuthCoordinator.h>
 #import <SalesforceSDKCore/SFOAuthCoordinator.h>
 #import <SalesforceSDKCore/SFSDKLoginViewControllerConfig.h>
-#import <SalesforceSDKCore/SFSDKAppLockViewConfig.h>
-#import <SalesforceSDKCore/SFSecurityLockout.h>
 #import <SalesforceSDKCore/SalesforceSDKConstants.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -177,8 +175,8 @@ FOUNDATION_EXTERN NSString * const kSFIDPSceneIdKey NS_SWIFT_NAME(UserAccountMan
 NS_SWIFT_NAME(UserAccountManagerDelegate)
 @protocol SFUserAccountManagerDelegate <NSObject>
 
-
 @optional
+
 /**
  Called when the account manager wants to determine if the network is available.
  @param userAccountManager The instance of SFUserAccountManager making the call.
@@ -232,6 +230,11 @@ NS_SWIFT_NAME(UserAccountManager.NotificationUserInfo)
  */
 NS_SWIFT_NAME(UserAccountManager)
 @interface SFUserAccountManager : NSObject
+
+/**
+ * Completion block for when auth is cancelled.
+ */
+@property (nonatomic, readwrite, copy, nullable) void (^authCancelledByUserHandlerBlock)(void);
 
 /** The current user account.  This property may be nil if the user
  has never logged in.
@@ -335,11 +338,6 @@ NS_SWIFT_NAME(UserAccountManager)
  *
  */
 @property (nonatomic,strong) SFSDKLoginViewControllerConfig *loginViewControllerConfig;
-
-/** Use this property to indicate to provide PasscodeViewController customizations for themes,navbar, icons and settings.
- *
- */
-@property (nonatomic,strong) SFSDKAppLockViewConfig *appLockViewControllerConfig;
 
 /** Shared singleton
  */
@@ -515,26 +513,6 @@ Use this method to stop/clear any authentication which is has already been start
  */
 - (BOOL)handleIDPAuthenticationResponse:(NSURL *)url options:(nonnull NSDictionary *)options NS_SWIFT_NAME(handleIdentityProviderResponse(from:with:));
 
-/**
- Presents the setup screen that allows the user to opt into Touch/Face Id as a replacement for Passcode.
- @param config The AppLockViewConfig used to customize the Passcode and Biometric Screens.
- */
-- (void)presentBiometricEnrollment:(nullable SFSDKAppLockViewConfig *)config;
-
-/**
- Determines if the deivce has Touch/Face Id enabled.
- @return YES if the device is capable of biometric unlock, NO otherwise.
- */
-- (BOOL)deviceHasBiometric;
-
-/**
- Determines if the deivce is currently using Touch/Face Id instead of passcode.
- @return SFBiometricUnlockState UserAllowed, UserDeclined, PromptUser or Unavalible.  
- */
-- (SFBiometricUnlockState)biometricUnlockState;
-
 @end
 
 NS_ASSUME_NONNULL_END
-                                                                          
-                                                                          

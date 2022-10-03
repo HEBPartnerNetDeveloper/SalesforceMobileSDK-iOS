@@ -137,7 +137,7 @@ class RootViewController: UIViewController {
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(clearPopoversForPasscode),
-                                               name: NSNotification.Name(rawValue: kSFPasscodeFlowWillBegin),
+                                               name: NSNotification.Name(rawValue: kSFScreenLockFlowWillBegin),
                                                object: nil)
         
         self.navigationController?.navigationBar.barTintColor = UIColor.appDarkBlue
@@ -845,6 +845,8 @@ extension RootViewController: ActionTableViewDelegate {
                 return
             }
             request = restApi.request(forDeleteFileShare: objId, apiVersion: SFRestDefaultAPIVersion)
+        case .primingRecords:
+            request = restApi.request(forPrimingRecords: nil, changedAfterTimestamp: nil, apiVersion: SFRestDefaultAPIVersion)
         case .currentUserInfo:
             guard let currentAccount = UserAccountManager.shared.currentUserAccount else {return}
             let idData = currentAccount.idData
@@ -852,12 +854,6 @@ extension RootViewController: ActionTableViewDelegate {
             userInfoString += "\nID: " + idData.username
             userInfoString += "\nEmail: " + idData.email
             self.showAlert("User Info", message: userInfoString)
-            return
-        case .enableBiometric:
-            // Uncomment this code to find the current state of biometric unlock
-            //UserAccountManager.shared.biometricUnlockState()
-            
-            UserAccountManager.shared.presentBiometricEnrollment(nil)
             return
         case .logout:
             self.presentedViewController?.dismiss(animated: true, completion: nil)

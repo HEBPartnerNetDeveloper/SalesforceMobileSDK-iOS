@@ -22,7 +22,8 @@
  WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import <SalesforceSDKCore/SFKeyStore.h>
+#import "SFKeyStore.h"
+#import <SalesforceSDKCore/SalesforceSDKConstants.h>
 
 extern NSString * const kGeneratedKeyLabelSuffix;
 

@@ -83,9 +83,9 @@
  */
 @property (nonatomic, assign) UIUserInterfaceStyle userInterfaceStyle;
 
-/** SDK uses this window to present the passcode view.
+/** SDK uses this window to present the screen lock view.
  */
-- (nonnull SFSDKWindowContainer *)passcodeWindow;
+- (nonnull SFSDKWindowContainer *)screenLockWindow;
 
 /** SDK uses this window to present the login flow for the given scene. Defaults a connected scene if one isn't provided.
  */
