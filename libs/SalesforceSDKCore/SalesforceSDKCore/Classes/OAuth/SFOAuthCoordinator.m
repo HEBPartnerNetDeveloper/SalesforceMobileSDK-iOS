@@ -728,7 +728,8 @@ static NSString * const kSFAppStoreLink   = @"itunes.apple.com";
         decisionHandler(WKNavigationActionPolicyCancel);
     } else if ([requestUrl containsString:@"otpauth://"] || [requestUrl containsString:kSFAppStoreLink]) {
         decisionHandler(WKNavigationActionPolicyCancel);
-        [[UIApplication sharedApplication] openURL:url];
+        // This was a fix for salesforce authenticator appstore link that is not applicable anymore
+        // [[UIApplication sharedApplication] openURL:url];
     } else {
         decisionHandler(WKNavigationActionPolicyAllow);
     }
