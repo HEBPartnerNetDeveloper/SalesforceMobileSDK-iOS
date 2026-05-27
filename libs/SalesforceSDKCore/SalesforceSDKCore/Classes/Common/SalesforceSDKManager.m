@@ -318,6 +318,7 @@ SFNativeLoginManagerInternal *nativeLogin;
         self.useWebServerAuthentication = YES;
         self.blockSalesforceIntegrationUser = NO;
         self.useHybridAuthentication = YES;
+        self.useBrowserUserAgentAuthentication = NO;
         
         // This line does not allow for a custom config and needed to be removed.
         // [self setupServiceConfiguration];

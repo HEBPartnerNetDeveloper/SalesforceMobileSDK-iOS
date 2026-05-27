@@ -1201,6 +1201,7 @@ static NSString * const kSFGenericFailureAuthErrorHandler = @"GenericFailureErro
     tokenQuery[(__bridge id)kSecClass] = (__bridge id)kSecClassGenericPassword;
     tokenQuery[(__bridge id)kSecMatchLimit] = (__bridge id)kSecMatchLimitAll;
     tokenQuery[(__bridge id)kSecReturnAttributes] = (id)kCFBooleanTrue;
+    tokenQuery[(__bridge id)kSecUseAuthenticationUI] = (__bridge id)kSecUseAuthenticationUISkip;
 
     CFArrayRef outArr = nil;
     OSStatus result = SecItemCopyMatching((__bridge CFDictionaryRef)[NSDictionary dictionaryWithDictionary:tokenQuery], (CFTypeRef *)&outArr);

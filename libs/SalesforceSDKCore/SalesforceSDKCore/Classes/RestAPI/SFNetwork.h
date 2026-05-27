@@ -82,7 +82,7 @@ typedef void (^SFSDKMetricsCollectedBlock)(NSURLSession * _Nonnull session, NSUR
  * @param sessionConfiguration Configuration to use for the session.
  * @return Instance of this class.
  */
-+ (nonnull instancetype)sharedInstanceWithIdentifier:(nonnull NSString *)identifier sessionConfiguration:(nonnull NSURLSessionConfiguration *)sessionConfiguration;
++ (nonnull instancetype)sharedInstanceWithIdentifier:(nonnull NSString *)identifier sessionConfiguration:(nonnull NSURLSessionConfiguration *)sessionConfiguration delegate:(nullable id<NSURLSessionDelegate>)delegate;
 
 /**
  * Sends a REST request and calls the appropriate completion block.
@@ -96,10 +96,13 @@ typedef void (^SFSDKMetricsCollectedBlock)(NSURLSession * _Nonnull session, NSUR
 /**
  * Sets a session configuration to be used for network requests in Mobile SDK.
  *
- * @param sessionConfig Session configuration to be used.
- * @param identifier Identifier for the instance to use this config.
+ * @param sessionConfig The session configuration to use.
+ * @param identifier A unique identifier for the network instance.
+ * @param delegate An optional delegate that conforms to NSURLSessionDelegate.
  */
-+ (void)setSessionConfiguration:(nonnull NSURLSessionConfiguration *)sessionConfig identifier:(nonnull NSString *)identifier;
++ (void)setSessionConfiguration:(nonnull NSURLSessionConfiguration *)sessionConfig
+                     identifier:(nonnull NSString *)identifier
+                       delegate:(nullable id<NSURLSessionDelegate>)delegate;
 
 /**
  * Removes shared instance for the default ephemeral identifier.
