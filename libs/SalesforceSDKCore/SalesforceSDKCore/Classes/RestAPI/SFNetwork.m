@@ -50,7 +50,7 @@ static SFSDKMetricsCollectedBlock _metricsCollectedAction = nil;
 
 + (instancetype)sharedEphemeralInstanceWithIdentifier:(NSString *)identifier {
     NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
-    return [SFNetwork sharedInstanceWithIdentifier:identifier sessionConfiguration:sessionConfiguration];
+    return [SFNetwork sharedInstanceWithIdentifier:identifier sessionConfiguration:sessionConfiguration delegate:nil];
 }
 
 + (instancetype)sharedBackgroundInstance {
@@ -59,10 +59,10 @@ static SFSDKMetricsCollectedBlock _metricsCollectedAction = nil;
 
 + (instancetype)sharedBackgroundInstanceWithIdentifier:(NSString *)identifier {
     NSURLSessionConfiguration *sessionConfiguration = [NSURLSessionConfiguration backgroundSessionConfigurationWithIdentifier:identifier];
-    return [SFNetwork sharedInstanceWithIdentifier:identifier sessionConfiguration:sessionConfiguration];
+    return [SFNetwork sharedInstanceWithIdentifier:identifier sessionConfiguration:sessionConfiguration delegate:nil];
 }
 
-+ (instancetype)sharedInstanceWithIdentifier:(nonnull NSString *)identifier sessionConfiguration:(nonnull NSURLSessionConfiguration *)sessionConfiguration {
++ (instancetype)sharedInstanceWithIdentifier:(nonnull NSString *)identifier sessionConfiguration:(nonnull NSURLSessionConfiguration *)sessionConfiguration delegate:(nullable id<NSURLSessionDelegate>)delegate {
     static dispatch_once_t pred;
     dispatch_once(&pred, ^{
         sharedInstances = [[SFSDKSafeMutableDictionary alloc] init];
@@ -70,16 +70,16 @@ static SFSDKMetricsCollectedBlock _metricsCollectedAction = nil;
 
     SFNetwork *network = sharedInstances[identifier];
     if (!network) {
-        network = [[self alloc] initWithSessionConfiguration:sessionConfiguration];
+        network = [[self alloc] initWithSessionConfiguration:sessionConfiguration delegate:delegate];
         sharedInstances[identifier] = network;
     }
     return network;
 }
 
-- (instancetype)initWithSessionConfiguration:(NSURLSessionConfiguration *)sessionConfiguration  {
+- (instancetype)initWithSessionConfiguration:(NSURLSessionConfiguration *)sessionConfiguration delegate:(nullable id<NSURLSessionDelegate>)delegate  {
     self = [super init];
     if (self) {
-        _activeSession = [NSURLSession sessionWithConfiguration:sessionConfiguration delegate:self delegateQueue:nil];
+        _activeSession = [NSURLSession sessionWithConfiguration:sessionConfiguration delegate:delegate delegateQueue:nil];
     }
     return self;
 }
@@ -99,9 +99,9 @@ static SFSDKMetricsCollectedBlock _metricsCollectedAction = nil;
     return dataTask;
 }
 
-+ (void)setSessionConfiguration:(nonnull NSURLSessionConfiguration *)sessionConfig identifier:(nonnull NSString *)identifier {
++ (void)setSessionConfiguration:(nonnull NSURLSessionConfiguration *)sessionConfig identifier:(nonnull NSString *)identifier delegate:(nullable id<NSURLSessionDelegate>)delegate {
     [SFNetwork removeSharedInstanceForIdentifier:identifier];
-    [SFNetwork sharedInstanceWithIdentifier:identifier sessionConfiguration:sessionConfig];
+    [SFNetwork sharedInstanceWithIdentifier:identifier sessionConfiguration:sessionConfig delegate:delegate];
 }
 
 + (NSArray *)sharedInstanceIdentifiers {

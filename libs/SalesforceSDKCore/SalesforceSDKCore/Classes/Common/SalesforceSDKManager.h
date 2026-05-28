@@ -244,6 +244,8 @@ NS_SWIFT_NAME(SalesforceManager)
  */
 @property (nonatomic, assign) BOOL useWebServerAuthentication;
 
+@property (nonatomic, assign) BOOL useBrowserUserAgentAuthentication;
+
 /** Whether hybrid authentication flow should be used. Defaults to YES.
  */
 @property (nonatomic, assign) BOOL useHybridAuthentication;

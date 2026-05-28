@@ -96,6 +96,7 @@ static NSString * const kSFAppStoreLink   = @"itunes.apple.com";
     if (self) {
         self.credentials = credentials;
         self.authenticating = NO;
+        self.useBrowserFlowForUserAgentAuth = NO;
         _timeout = kSFOAuthDefaultTimeout;
         _view = nil;
         _authClient = [[SFSDKOAuth2 alloc] init];
@@ -109,6 +110,7 @@ static NSString * const kSFAppStoreLink   = @"itunes.apple.com";
         self.authSession = authSession;
         self.credentials = authSession.credentials;
         self.authenticating = NO;
+        self.useBrowserFlowForUserAgentAuth = NO;
         _timeout = kSFOAuthDefaultTimeout;
         _view = nil;
         _authClient = [[SFSDKOAuth2 alloc] init];
@@ -153,6 +155,8 @@ static NSString * const kSFAppStoreLink   = @"itunes.apple.com";
         self.authInfo = [[SFOAuthInfo alloc] initWithAuthType:SFOAuthTypeUserAgent];
     }
     
+    self.useBrowserFlowForUserAgentAuth = [[SalesforceSDKManager sharedManager] useBrowserUserAgentAuthentication];
+    
     // Don't try to authenticate if there is no network available
     if ([self.delegate respondsToSelector:@selector(oauthCoordinatorIsNetworkAvailable:)] &&
         ![self.delegate oauthCoordinatorIsNetworkAvailable:self]) {
@@ -173,7 +177,15 @@ static NSString * const kSFAppStoreLink   = @"itunes.apple.com";
         [self beginJwtTokenExchangeFlow];
     } else {
         __weak typeof(self) weakSelf = self;
-        if (self.useNativeAuth) {
+        if (self.useBrowserFlowForUserAgentAuth) {
+            [SFSDKAppFeatureMarkers registerAppFeature:kSFAppFeatureSafariBrowserForLogin];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                __strong typeof(weakSelf) strongSelf = weakSelf;
+                strongSelf.authInfo = [[SFOAuthInfo alloc] initWithAuthType:SFOAuthTypeAdvancedBrowser];
+                [strongSelf notifyDelegateOfBeginAuthentication];
+                [strongSelf beginNativeBrowserFlowWithSharedBrowserSessionEnabled:false];
+            });
+        } else if (self.useNativeAuth) {
             dispatch_async(dispatch_get_main_queue(), ^{
                 __strong typeof(weakSelf) strongSelf = weakSelf;
                 strongSelf.authInfo = [[SFOAuthInfo alloc] initWithAuthType:SFOAuthTypeNative];
@@ -398,7 +410,7 @@ static NSString * const kSFAppStoreLink   = @"itunes.apple.com";
     }
     NSString *approvalUrl = [self approvalURLForEndpoint:[self brandedAuthorizeURL]
                                              credentials:self.credentials
-                                           webServerFlow:YES
+                                           webServerFlow:!self.useBrowserFlowForUserAgentAuth
                                                 protocol:nil
                                                   domain:nil
                                            codeChallenge:nil];
@@ -418,6 +430,8 @@ static NSString * const kSFAppStoreLink   = @"itunes.apple.com";
         if (!error && [[SFSDKURLHandlerManager sharedInstance] canHandleRequest:callbackURL options:nil]) {
             NSDictionary *options = @{kSFIDPSceneIdKey : self.authSession.sceneId};
             [[SFSDKURLHandlerManager sharedInstance] processRequest:callbackURL options:options completion:nil failure:nil];
+        } else if (!error && self.useBrowserFlowForUserAgentAuth) {
+            [self handleUserAgentResponse:callbackURL];
         } else {
             [strongSelf.delegate oauthCoordinatorDidCancelBrowserAuthentication:strongSelf];
         }

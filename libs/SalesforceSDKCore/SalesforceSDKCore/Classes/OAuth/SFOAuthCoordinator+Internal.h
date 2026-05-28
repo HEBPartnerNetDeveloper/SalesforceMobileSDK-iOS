@@ -47,6 +47,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, copy) NSString *origWebUserAgent;
 @property (nonatomic, strong ,nullable) SFOAuthCredentials *spAppCredentials;
 @property (nonatomic, weak, nullable) SFSDKAuthSession *authSession;
+@property (nonatomic, assign) BOOL useBrowserFlowForUserAgentAuth;
+
 
 /// For Salesforce Identity UI Bridge API support, an overriding front door bridge URL to use in place of the default initial URL.
 @property (nonatomic, strong, nullable) NSURL *overrideWithFrontDoorBridgeUrl;
